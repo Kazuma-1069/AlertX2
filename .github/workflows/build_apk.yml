@@ -5,102 +5,147 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:     # Allow manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   build-apk:
     name: Build Android APK
     runs-on: ubuntu-22.04
-    timeout-minutes: 60
+    timeout-minutes: 90
 
     steps:
       # ── 1. Checkout ─────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── 2. Set up Python ────────────────────────────────────────────────
+      # ── 2. Set up Python 3.11 ──────────────────────────────────────────
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # ── 3. Install system dependencies required by Buildozer ────────────
+      # ── 3. System dependencies ─────────────────────────────────────────
       - name: Install system dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            git zip unzip openjdk-17-jdk python3-pip \
-            build-essential ccache libncurses5 libstdc++6 \
-            libssl-dev libffi-dev python3-dev \
-            zlib1g-dev autoconf libtool libltdl-dev \
-            pkg-config cmake ninja-build \
-            ffmpeg libsdl2-dev libsdl2-image-dev \
-            libsdl2-mixer-dev libsdl2-ttf-dev
+            git zip unzip \
+            openjdk-17-jdk \
+            python3-pip python3-dev \
+            build-essential ccache \
+            libncurses5 libstdc++6 \
+            libssl-dev libffi-dev \
+            zlib1g-dev autoconf libtool \
+            libltdl-dev pkg-config cmake ninja-build \
+            libsdl2-dev libsdl2-image-dev \
+            libsdl2-mixer-dev libsdl2-ttf-dev \
+            ffmpeg lld
 
-      # ── 4. Cache Buildozer .buildozer directory (speeds up rebuilds) ────
+          # Set Java 17 as default
+          sudo update-alternatives --set java \
+            /usr/lib/jvm/java-17-openjdk-amd64/bin/java || true
+
+      # ── 4. Set up Android SDK via sdkmanager (reliable method) ─────────
+      - name: Set up Android SDK
+        run: |
+          # Use the pre-installed Android SDK on GitHub runners
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+
+          # Install required SDK components
+          echo "y" | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager \
+            "platform-tools" \
+            "platforms;android-34" \
+            "build-tools;34.0.0" \
+            "ndk;25.2.9519653" 2>/dev/null || true
+
+          # Verify build-tools installed
+          ls $ANDROID_SDK_ROOT/build-tools/ || echo "build-tools dir missing"
+
+          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/25.2.9519653" >> $GITHUB_ENV
+
+      # ── 5. Accept Android SDK licenses ─────────────────────────────────
+      - name: Accept Android SDK licenses
+        run: |
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses 2>/dev/null || true
+
+      # ── 6. Cache Buildozer directory ────────────────────────────────────
       - name: Cache Buildozer global directory
         uses: actions/cache@v4
         with:
           path: |
             ~/.buildozer
             android/.buildozer
-          key: buildozer-${{ runner.os }}-${{ hashFiles('android/buildozer.spec') }}
+          key: buildozer-${{ runner.os }}-${{ hashFiles('android/buildozer.spec') }}-v2
           restore-keys: |
             buildozer-${{ runner.os }}-
 
-      # ── 5. Cache pip ─────────────────────────────────────────────────────
+      # ── 7. Cache pip ────────────────────────────────────────────────────
       - name: Cache pip
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: pip-${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
-          restore-keys: |
-            pip-${{ runner.os }}-
 
-      # ── 6. Install Buildozer & Cython ────────────────────────────────────
+      # ── 8. Install Buildozer ────────────────────────────────────────────
       - name: Install Buildozer and Cython
         run: |
           pip install --upgrade pip wheel setuptools
-          pip install buildozer Cython==0.29.36
+          pip install Cython==0.29.36
+          pip install buildozer
 
-      # ── 7. Accept Android SDK licenses ──────────────────────────────────
-      - name: Accept Android SDK licenses
+      # ── 9. Configure Buildozer to use pre-installed SDK/NDK ────────────
+      - name: Configure Buildozer SDK paths
+        working-directory: android
         run: |
-          mkdir -p ~/.android
-          echo "count=0" > ~/.android/repositories.cfg
-          yes | sdkmanager --licenses 2>/dev/null || true
-        env:
-          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+          # Tell buildozer where to find the pre-installed SDK
+          mkdir -p ~/.buildozer/android/platform
+          ln -sfn $ANDROID_HOME \
+            ~/.buildozer/android/platform/android-sdk || true
 
-      # ── 8. Build debug APK ───────────────────────────────────────────────
+          # Patch buildozer.spec to use system SDK
+          # (buildozer will use its own download if not already present)
+          echo "android.sdk_path = $ANDROID_HOME" >> buildozer.spec
+          echo "android.ndk_path = $ANDROID_HOME/ndk/25.2.9519653" >> buildozer.spec
+          echo "android.build_tools_version = 34.0.0" >> buildozer.spec
+
+      # ── 10. Build debug APK ─────────────────────────────────────────────
       - name: Build AlertX debug APK
         working-directory: android
         env:
-          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+          ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_HOME }}
+          # Suppress interactive prompts
+          BUILDOZER_WARN_ON_ROOT: "0"
         run: |
-          buildozer android debug 2>&1 | tee build.log
-          echo "--- Build completed ---"
-          ls -lh bin/ 2>/dev/null || echo "No bin/ directory found"
+          # Accept licenses non-interactively
+          yes | buildozer android debug 2>&1 | tee build.log
+          echo "--- Build step completed ---"
+          ls -lh bin/ 2>/dev/null || echo "WARNING: No bin/ directory — build may have failed"
 
-      # ── 9. Upload APK as workflow artifact (always available) ────────────
+      # ── 11. Upload APK artifact ─────────────────────────────────────────
       - name: Upload APK artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: alertx-debug-apk
           path: android/bin/*.apk
+          if-no-files-found: error
           retention-days: 30
 
-      # ── 10. Upload build log on failure ──────────────────────────────────
-      - name: Upload build log on failure
-        if: failure()
+      # ── 12. Upload build log (always, for debugging) ────────────────────
+      - name: Upload build log
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-log
+          name: build-log-${{ github.run_number }}
           path: android/build.log
+          if-no-files-found: ignore
           retention-days: 7
 
-  # ── Release job: runs only on push to main ──────────────────────────────
+  # ── Create GitHub Release with the APK ──────────────────────────────────
   create-release:
     name: Create GitHub Release
     runs-on: ubuntu-22.04
@@ -111,7 +156,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Download the APK artifact from build-apk job
       - name: Download APK artifact
         uses: actions/download-artifact@v4
         with:
@@ -121,41 +165,36 @@ jobs:
       - name: List release assets
         run: ls -lh ./release-assets/
 
-      # Create a release with a tag based on the commit SHA
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v2.0.0-build-${{ github.run_number }}
-          name: AlertX v2.0.0 — Build ${{ github.run_number }}
+          name: "AlertX v2.0.0 — Build #${{ github.run_number }}"
           body: |
-            ## AlertX Android APK
+            ## AlertX Android APK — Build #${{ github.run_number }}
 
-            **Build**: #${{ github.run_number }}
-            **Commit**: `${{ github.sha }}`
+            **Commit**: `${{ github.sha }}`  
             **Branch**: `${{ github.ref_name }}`
 
             ### Installation
-            1. Download the `alertx-debug-apk` file below
+            1. Download the `.apk` file below
             2. Transfer it to your Android device
-            3. Enable **Install from Unknown Sources** in Settings → Security
+            3. Enable **Install from Unknown Sources** → Settings → Security
             4. Tap the APK to install
 
-            ### What's Included
+            ### Features
             - ✅ Instant 1-tap SOS (zero countdown)
             - ✅ 5-tap rapid SOS detector
-            - ✅ Live GPS location sharing
-            - ✅ Emergency contact management with priority calling
-            - ✅ Safety timer with auto-escalation
-            - ✅ Emergency guides (CPR, Earthquake, Fire, First Aid, Flood, Heimlich)
-            - ✅ Evidence vault (audio + photo recording)
-            - ✅ Community incident reporting (with offline queue)
+            - ✅ Live GPS location sharing with secure tracking link
+            - ✅ Priority-tiered emergency contacts (auto-call + SMS)
+            - ✅ Safety timer with auto-SOS escalation
+            - ✅ Emergency guides: CPR, Earthquake, Fire, First Aid, Flood, Heimlich
+            - ✅ Evidence vault (audio recording + photo)
+            - ✅ Community incident reporting with offline queue
             - ✅ Fake call escape tool
-            - ✅ Nearby emergency services quick-dial
+            - ✅ Nearby emergency services quick-dial (Police 100, Fire 101, Ambulance 108)
             - ✅ Medical profile for emergency responders
-
-            > **Note**: This is a debug build. For production release, set up your keystore and use `buildozer android release`.
-          files: |
-            ./release-assets/*.apk
+          files: ./release-assets/*.apk
           draft: false
           prerelease: false
         env:
