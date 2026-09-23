@@ -1,0 +1,31 @@
+<EmergencyScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "24dp"
+        spacing: "20dp"
+        md_bg_color: 0.2, 0.05, 0.05, 1
+
+        MDLabel:
+            text: "EMERGENCY ACTIVE"
+            font_style: "H4"
+            halign: "center"
+            theme_text_color: "Custom"
+            text_color: 1, 0.2, 0.2, 1
+            bold: True
+
+        MDLabel:
+            text: "Alert sent to your trusted contacts. Continuous GPS tracking and audio monitoring are active."
+            halign: "center"
+            theme_text_color: "Secondary"
+
+        MDRaisedButton:
+            text: "Call Emergency Dispatch (112 / 911)"
+            size_hint_x: 1
+            md_bg_color: 0.8, 0, 0, 1
+
+        MDRectangleFlatButton:
+            text: "I AM SAFE (CANCEL SOS)"
+            size_hint_x: 1
+            theme_text_color: "Custom"
+            text_color: 0.3, 0.9, 0.3, 1
+            on_release: root.cancel_emergency()

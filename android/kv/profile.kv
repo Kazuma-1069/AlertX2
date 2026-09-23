@@ -1,0 +1,25 @@
+<ProfileScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "16dp"
+        spacing: "12dp"
+
+        MDTopAppBar:
+            title: "Personal Profile"
+            left_action_items: [["arrow-left", lambda x: setattr(root.manager, "current", "home")]]
+
+        MDLabel:
+            text: "Medical & Emergency Profile"
+            font_style: "Subtitle1"
+
+        MDTextField:
+            hint_text: "Blood Type (e.g. O+)"
+            mode: "rectangle"
+
+        MDTextField:
+            hint_text: "Allergies or Medical Conditions"
+            mode: "rectangle"
+
+        MDRaisedButton:
+            text: "Save Medical Profile"
+            size_hint_x: 1

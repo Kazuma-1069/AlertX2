@@ -1,0 +1,22 @@
+<SafetyScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "16dp"
+        spacing: "16dp"
+
+        MDTopAppBar:
+            title: "Safety Timers"
+            left_action_items: [["arrow-left", lambda x: setattr(root.manager, "current", "home")]]
+
+        MDLabel:
+            text: "Automated Check-in Countdown"
+            font_style: "H6"
+
+        MDTextField:
+            hint_text: "Destination or Note (e.g. Walking home)"
+            mode: "rectangle"
+
+        MDRaisedButton:
+            text: "Start 15-Minute Safety Timer"
+            size_hint_x: 1
+            on_release: root.manager.current = "home"

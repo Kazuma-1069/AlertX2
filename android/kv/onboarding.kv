@@ -1,0 +1,20 @@
+<OnboardingScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "24dp"
+        spacing: "16dp"
+
+        MDLabel:
+            text: "Welcome to AlertX2"
+            font_style: "H4"
+            halign: "center"
+
+        MDLabel:
+            text: "Instant help when seconds count. Configure your trusted emergency contacts and continuous protection."
+            halign: "center"
+            theme_text_color: "Secondary"
+
+        MDRaisedButton:
+            text: "Get Started"
+            pos_hint: {"center_x": 0.5}
+            on_release: root.manager.current = "auth"

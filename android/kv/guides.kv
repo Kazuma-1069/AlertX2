@@ -1,0 +1,29 @@
+<GuidesScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "16dp"
+        spacing: "12dp"
+
+        MDTopAppBar:
+            title: "Emergency First Aid & Guides"
+            left_action_items: [["arrow-left", lambda x: setattr(root.manager, "current", "home")]]
+
+        MDLabel:
+            text: "Interactive Emergency Protocols"
+            font_style: "Subtitle1"
+
+        MDRaisedButton:
+            text: "1. CPR (Cardiopulmonary Resuscitation)"
+            size_hint_x: 1
+
+        MDRaisedButton:
+            text: "2. Choking First Aid (Heimlich Maneuver)"
+            size_hint_x: 1
+
+        MDRaisedButton:
+            text: "3. Earthquake Survival"
+            size_hint_x: 1
+
+        MDRaisedButton:
+            text: "4. Structure Fire Evacuation"
+            size_hint_x: 1

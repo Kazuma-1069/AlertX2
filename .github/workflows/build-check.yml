@@ -1,0 +1,24 @@
+name: Build & Syntax Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint-and-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Syntax Check All Python Scripts
+        run: |
+          python -m py_compile backend/app/main.py
+          python -m py_compile android/main.py
+          echo "All core entrypoints compiled cleanly."

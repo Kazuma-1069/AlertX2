@@ -1,0 +1,25 @@
+<ContactsScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "16dp"
+        spacing: "12dp"
+
+        MDTopAppBar:
+            title: "Emergency Contacts"
+            left_action_items: [["arrow-left", lambda x: setattr(root.manager, "current", "home")]]
+
+        MDLabel:
+            text: "Your Trusted Circle"
+            font_style: "Subtitle1"
+
+        MDTextField:
+            hint_text: "Contact Name"
+            mode: "rectangle"
+
+        MDTextField:
+            hint_text: "Phone Number (+1...)"
+            mode: "rectangle"
+
+        MDRaisedButton:
+            text: "Add Emergency Contact"
+            size_hint_x: 1

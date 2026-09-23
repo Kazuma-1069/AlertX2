@@ -1,0 +1,13 @@
+<IncidentScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "16dp"
+        spacing: "12dp"
+
+        MDTopAppBar:
+            title: "Incident Telemetry"
+            left_action_items: [["arrow-left", lambda x: setattr(root.manager, "current", "home")]]
+
+        MDLabel:
+            text: "Real-time Telemetry & Log"
+            font_style: "Subtitle1"

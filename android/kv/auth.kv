@@ -1,0 +1,33 @@
+<AuthScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "32dp"
+        spacing: "16dp"
+
+        MDLabel:
+            text: "Secure Sign In"
+            font_style: "H4"
+            bold: True
+
+        MDTextField:
+            id: email_field
+            hint_text: "Email"
+            icon_right: "email"
+            mode: "rectangle"
+
+        MDTextField:
+            id: password_field
+            hint_text: "Password"
+            password: True
+            icon_right: "lock"
+            mode: "rectangle"
+
+        MDRaisedButton:
+            text: "Sign In"
+            size_hint_x: 1
+            on_release: root.perform_login(email_field.text, password_field.text)
+
+        MDFlatButton:
+            text: "Continue as Guest"
+            size_hint_x: 1
+            on_release: root.manager.current = "home"

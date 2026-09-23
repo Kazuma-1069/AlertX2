@@ -1,0 +1,56 @@
+<HomeScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: "16dp"
+        spacing: "16dp"
+
+        MDTopAppBar:
+            title: "AlertX2 Safety"
+            elevation: 2
+            right_action_items: [["account-circle", lambda x: setattr(root.manager, "current", "profile")]]
+
+        MDLabel:
+            text: "RAPID EMERGENCY ASSISTANCE"
+            halign: "center"
+            theme_text_color: "Secondary"
+            font_style: "Subtitle2"
+
+        MDFillRoundFlatButton:
+            text: "SOS"
+            font_size: "36sp"
+            size_hint: None, None
+            size: "180dp", "180dp"
+            pos_hint: {"center_x": 0.5}
+            md_bg_color: 0.9, 0.1, 0.1, 1
+            on_release: root.on_sos_click()
+
+        MDLabel:
+            text: "Press to instantly alert contacts and dispatch live location"
+            halign: "center"
+            theme_text_color: "Hint"
+
+        MDGridLayout:
+            cols: 2
+            spacing: "12dp"
+            size_hint_y: None
+            height: "120dp"
+
+            MDRaisedButton:
+                text: "Safety Timer"
+                size_hint: 1, 1
+                on_release: root.manager.current = "safety"
+
+            MDRaisedButton:
+                text: "Emergency Guides"
+                size_hint: 1, 1
+                on_release: root.manager.current = "guides"
+
+            MDRaisedButton:
+                text: "Contacts"
+                size_hint: 1, 1
+                on_release: root.manager.current = "contacts"
+
+            MDRaisedButton:
+                text: "Nearby Safe Zones"
+                size_hint: 1, 1
+                on_release: root.manager.current = "nearby"
