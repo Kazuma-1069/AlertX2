@@ -1,33 +1,36 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict
 
-class ContactBase(BaseModel):
+class EmergencyContactBase(BaseModel):
     name: str
-    phone_number: str
-    email: Optional[EmailStr] = None
+    phone: str
     relationship: str = "Friend"
-    is_primary: bool = False
-    receive_sms: bool = True
-    receive_call: bool = True
-    receive_whatsapp: bool = False
+    priority: int = 1  # 1, 2, 3...
+    receive_sos: bool = True
+    receive_location: bool = True
+    receive_checkin_alert: bool = True
 
-class ContactCreate(ContactBase):
+class EmergencyContactCreate(EmergencyContactBase):
     pass
 
-class ContactUpdate(BaseModel):
+class EmergencyContactUpdate(BaseModel):
     name: Optional[str] = None
-    phone_number: Optional[str] = None
-    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
     relationship: Optional[str] = None
-    is_primary: Optional[bool] = None
-    receive_sms: Optional[bool] = None
-    receive_call: Optional[bool] = None
-    receive_whatsapp: Optional[bool] = None
+    priority: Optional[int] = None
+    receive_sos: Optional[bool] = None
+    receive_location: Optional[bool] = None
+    receive_checkin_alert: Optional[bool] = None
 
-class ContactResponse(ContactBase):
+class EmergencyContactResponse(EmergencyContactBase):
     id: int
     user_id: int
     created_at: datetime
-    class Config:
-        from_attributes = True
+    updated_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+# Aliases for backward and cross-module compatibility
+ContactCreate = EmergencyContactCreate
+ContactUpdate = EmergencyContactUpdate
+ContactResponse = EmergencyContactResponse

@@ -1,29 +1,184 @@
+#:import COLOR_SURFACE app.config.theme.COLOR_SURFACE
+#:import COLOR_SURFACE_CONTAINER app.config.theme.COLOR_SURFACE_CONTAINER
+#:import COLOR_SURFACE_CONTAINER_LOW app.config.theme.COLOR_SURFACE_CONTAINER_LOW
+#:import COLOR_SURFACE_CONTAINER_HIGH app.config.theme.COLOR_SURFACE_CONTAINER_HIGH
+#:import COLOR_TRACKING_BLUE app.config.theme.COLOR_TRACKING_BLUE
+#:import COLOR_EMERGENCY_RED app.config.theme.COLOR_EMERGENCY_RED
+#:import COLOR_TEXT_PRIMARY app.config.theme.COLOR_TEXT_PRIMARY
+#:import COLOR_TEXT_MUTED app.config.theme.COLOR_TEXT_MUTED
+
 <GuidesScreen>:
+    md_bg_color: COLOR_SURFACE
+
     MDBoxLayout:
         orientation: "vertical"
-        padding: "16dp"
-        spacing: "12dp"
 
-        MDTopAppBar:
-            title: "Emergency First Aid & Guides"
-            left_action_items: [["arrow-left", lambda x: setattr(root.manager, "current", "home")]]
+        # Header
+        MDBoxLayout:
+            size_hint_y: None
+            height: "56dp"
+            padding: ["16dp", "8dp", "16dp", "8dp"]
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
 
-        MDLabel:
-            text: "Interactive Emergency Protocols"
-            font_style: "Subtitle1"
+            MDIconButton:
+                icon: "arrow-left"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+                on_release: root.open_section("home")
 
-        MDRaisedButton:
-            text: "1. CPR (Cardiopulmonary Resuscitation)"
-            size_hint_x: 1
+            MDLabel:
+                text: "EMERGENCY & FIRST AID GUIDES"
+                font_style: "Subtitle1"
+                bold: True
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
 
-        MDRaisedButton:
-            text: "2. Choking First Aid (Heimlich Maneuver)"
-            size_hint_x: 1
+        ScrollView:
+            MDBoxLayout:
+                orientation: "vertical"
+                padding: "16dp"
+                spacing: "12dp"
+                adaptive_height: True
 
-        MDRaisedButton:
-            text: "3. Earthquake Survival"
-            size_hint_x: 1
+                # Category Chips Bar
+                MDBoxLayout:
+                    adaptive_size: True
+                    spacing: "8dp"
 
-        MDRaisedButton:
-            text: "4. Structure Fire Evacuation"
-            size_hint_x: 1
+                    MDChip:
+                        text: "All Protocols"
+                    MDChip:
+                        text: "Medical"
+                    MDChip:
+                        text: "Environmental"
+                    MDChip:
+                        text: "Personal Safety"
+
+                # Guide Cards
+                MDCard:
+                    orientation: "vertical"
+                    padding: "16dp"
+                    spacing: "6dp"
+                    size_hint_y: None
+                    height: "100dp"
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [12, 12, 12, 12]
+                    on_release: root.open_guide_detail("CPR (Cardiopulmonary Resuscitation)")
+
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        MDIcon:
+                            icon: "heart-pulse"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_EMERGENCY_RED
+                        MDLabel:
+                            text: " CPR Procedure (Adult)"
+                            font_style: "Subtitle2"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                    MDLabel:
+                        text: "Hands-only chest compressions (100-120 bpm) for sudden cardiac arrest."
+                        font_style: "Caption"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_MUTED
+
+                MDCard:
+                    orientation: "vertical"
+                    padding: "16dp"
+                    spacing: "6dp"
+                    size_hint_y: None
+                    height: "100dp"
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [12, 12, 12, 12]
+                    on_release: root.open_guide_detail("Earthquake Survival")
+
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        MDIcon:
+                            icon: "earth"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TRACKING_BLUE
+                        MDLabel:
+                            text: " Earthquake: Drop, Cover, Hold On"
+                            font_style: "Subtitle2"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                    MDLabel:
+                        text: "Immediate protective posture beneath sturdy furniture."
+                        font_style: "Caption"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_MUTED
+
+                MDCard:
+                    orientation: "vertical"
+                    padding: "16dp"
+                    spacing: "6dp"
+                    size_hint_y: None
+                    height: "100dp"
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [12, 12, 12, 12]
+                    on_release: root.open_guide_detail("Structure Fire Evacuation")
+
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        MDIcon:
+                            icon: "fire"
+                            theme_text_color: "Custom"
+                            text_color: (1.0, 0.5, 0.0, 1.0)
+                        MDLabel:
+                            text: " Structure Fire Evacuation"
+                            font_style: "Subtitle2"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                    MDLabel:
+                        text: "Crawl low beneath smoke, feel doors for heat, never re-enter."
+                        font_style: "Caption"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_MUTED
+
+        # 5-Tab Navigation Bar
+        MDBoxLayout:
+            size_hint_y: None
+            height: "64dp"
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
+
+            MDIconButton:
+                icon: "home"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("home")
+
+            MDIconButton:
+                icon: "shield"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("safety")
+
+            MDIconButton:
+                icon: "book-open-page-variant"
+                theme_text_color: "Custom"
+                text_color: COLOR_TRACKING_BLUE
+                size_hint_x: 0.2
+                on_release: root.open_section("guides")
+
+            MDIconButton:
+                icon: "account-multiple"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("contacts")
+
+            MDIconButton:
+                icon: "account"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("profile")

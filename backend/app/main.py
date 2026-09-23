@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
-from app.core.database import init_db
+from app.core.database import init_db, check_db_health, get_db
 from app.core.logging import logger
 
 from app.api.v1 import (
@@ -14,15 +15,15 @@ from app.websocket import sos_tracking
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Initializing AlertX2 database tables...")
+    logger.info(f"Initializing {settings.APP_NAME} engine...")
     await init_db()
-    logger.info("AlertX2 API engine online.")
+    logger.info(f"{settings.APP_NAME} online. {settings.TAGLINE}")
     yield
-    logger.info("AlertX2 shutting down...")
+    logger.info(f"{settings.APP_NAME} shutting down...")
 
 app = FastAPI(
     title=settings.APP_NAME,
-    description="AlertX2 Mission-Critical Personal Safety & Emergency Response Engine",
+    description=f"{settings.APP_NAME} Public Safety Application Core API. {settings.TAGLINE}",
     version="2.0.0",
     lifespan=lifespan
 )
@@ -39,25 +40,36 @@ app.add_middleware(
 app.include_router(auth.router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 app.include_router(users.router, prefix=f"{settings.API_V1_PREFIX}/users", tags=["Users & Profiles"])
 app.include_router(contacts.router, prefix=f"{settings.API_V1_PREFIX}/contacts", tags=["Emergency Contacts"])
-app.include_router(sos.router, prefix=f"{settings.API_V1_PREFIX}/sos", tags=["SOS Dispatch"])
+app.include_router(sos.router, prefix=f"{settings.API_V1_PREFIX}/sos", tags=["SOS Dispatch & State Engine"])
 app.include_router(location.router, prefix=f"{settings.API_V1_PREFIX}/location", tags=["Location Telemetry"])
 app.include_router(tracking.router, prefix=f"{settings.API_V1_PREFIX}/tracking", tags=["Public Live Tracking"])
 app.include_router(safety.router, prefix=f"{settings.API_V1_PREFIX}/safety", tags=["Safety Timers"])
 app.include_router(checkins.router, prefix=f"{settings.API_V1_PREFIX}/checkins", tags=["Safety Check-ins"])
 app.include_router(guides.router, prefix=f"{settings.API_V1_PREFIX}/guides", tags=["Emergency Guides"])
 app.include_router(incidents.router, prefix=f"{settings.API_V1_PREFIX}/incidents", tags=["Incident History"])
-app.include_router(reports.router, prefix=f"{settings.API_V1_PREFIX}/reports", tags=["Community Incident Reports"])
+app.include_router(reports.router, prefix=f"{settings.API_V1_PREFIX}/reports", tags=["Community Safety Reports"])
 app.include_router(evidence.router, prefix=f"{settings.API_V1_PREFIX}/evidence", tags=["Evidence Vault"])
 app.include_router(assistant.router, prefix=f"{settings.API_V1_PREFIX}/assistant", tags=["AI Safety Assistant"])
 
 # WebSocket Mounts
 app.include_router(sos_tracking.router, tags=["WebSockets"])
 
+# Health Check Endpoints (Section 41)
 @app.get("/health", tags=["System"])
 async def health_check():
     return {
         "status": "healthy",
         "service": settings.APP_NAME,
+        "tagline": settings.TAGLINE,
         "version": "2.0.0",
         "environment": settings.ENVIRONMENT
+    }
+
+@app.get("/health/database", tags=["System"])
+async def database_health_check():
+    db_ok = await check_db_health()
+    return {
+        "database_status": "healthy" if db_ok else "unhealthy",
+        "connected": db_ok,
+        "backend": settings.DATABASE_URL.split("://")[0]
     }

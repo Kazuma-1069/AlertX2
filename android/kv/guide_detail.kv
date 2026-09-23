@@ -1,0 +1,144 @@
+﻿<GuideDetailScreen>:
+    md_bg_color: 0.051, 0.067, 0.090, 1   # #0D1117
+
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: 0
+
+        # ── App Bar ────────────────────────────────────────────────────────
+        MDTopAppBar:
+            title: "Safety Guide"
+            left_action_items: [["arrow-left", lambda x: root.go_back()]]
+            md_bg_color: 0.086, 0.106, 0.133, 1   # #161B22
+            specific_text_color: 0.941, 0.965, 0.988, 1
+            elevation: 2
+
+        # ── Body ───────────────────────────────────────────────────────────
+        ScrollView:
+            do_scroll_x: False
+
+            MDBoxLayout:
+                orientation: "vertical"
+                padding: "16dp"
+                spacing: "16dp"
+                adaptive_height: True
+
+                # ── Title ──────────────────────────────────────────────────
+                MDLabel:
+                    id: guide_title_label
+                    text: root.guide_title
+                    theme_text_color: "Custom"
+                    text_color: 0.941, 0.965, 0.988, 1
+                    font_style: "H5"
+                    bold: True
+                    adaptive_height: True
+
+                # ── Chips row ──────────────────────────────────────────────
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    spacing: "10dp"
+                    adaptive_height: True
+
+                    # OFFLINE badge
+                    MDCard:
+                        orientation: "horizontal"
+                        padding: ["10dp", "4dp"]
+                        spacing: "6dp"
+                        adaptive_size: True
+                        md_bg_color: 0.063, 0.259, 0.122, 1   # dark green
+                        radius: [12, 12, 12, 12]
+
+                        MDIcon:
+                            icon: "wifi-off"
+                            theme_text_color: "Custom"
+                            text_color: 0.196, 0.804, 0.196, 1
+                            font_size: "14sp"
+                            size_hint_x: None
+                            width: "18dp"
+
+                        MDLabel:
+                            text: "OFFLINE AVAILABLE"
+                            theme_text_color: "Custom"
+                            text_color: 0.196, 0.804, 0.196, 1
+                            font_style: "Caption"
+                            bold: True
+                            adaptive_size: True
+
+                    # Category chip
+                    MDCard:
+                        orientation: "horizontal"
+                        padding: ["10dp", "4dp"]
+                        adaptive_size: True
+                        md_bg_color: 0.349, 0.259, 0.016, 1   # dark amber
+                        radius: [12, 12, 12, 12]
+
+                        MDLabel:
+                            id: category_chip_label
+                            text: root.guide_category
+                            theme_text_color: "Custom"
+                            text_color: 0.914, 0.639, 0.098, 1   # #E9A319
+                            font_style: "Caption"
+                            bold: True
+                            adaptive_size: True
+
+                # ── Divider ────────────────────────────────────────────────
+                MDSeparator:
+                    height: "1dp"
+                    color: 0.188, 0.212, 0.239, 1   # #30363D
+
+                # ── Step-by-step content ───────────────────────────────────
+                MDCard:
+                    orientation: "vertical"
+                    padding: "16dp"
+                    adaptive_height: True
+                    md_bg_color: 0.086, 0.106, 0.133, 1   # #161B22
+                    radius: [8, 8, 8, 8]
+                    line_color: 0.188, 0.212, 0.239, 1
+
+                    MDLabel:
+                        id: content_label
+                        text: root.guide_content
+                        theme_text_color: "Custom"
+                        text_color: 0.941, 0.965, 0.988, 1
+                        font_style: "Body1"
+                        adaptive_height: True
+
+                # ── Emergency Services Card ────────────────────────────────
+                MDCard:
+                    orientation: "horizontal"
+                    padding: "16dp"
+                    spacing: "12dp"
+                    adaptive_height: True
+                    md_bg_color: 0.149, 0.051, 0.051, 1   # dark red tint
+                    radius: [8, 8, 8, 8]
+                    line_color: 0.851, 0.176, 0.125, 1   # #D92D20
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        spacing: "4dp"
+                        adaptive_height: True
+
+                        MDLabel:
+                            text: "Emergency Services"
+                            theme_text_color: "Custom"
+                            text_color: 0.941, 0.965, 0.988, 1
+                            font_style: "Subtitle1"
+                            bold: True
+                            adaptive_height: True
+
+                        MDLabel:
+                            text: "Tap to call 112 immediately"
+                            theme_text_color: "Custom"
+                            text_color: 0.545, 0.580, 0.620, 1
+                            font_style: "Body2"
+                            adaptive_height: True
+
+                    MDFloatingActionButton:
+                        icon: "phone"
+                        on_release: root.call_emergency()
+                        md_bg_color: 0.851, 0.176, 0.125, 1
+                        theme_text_color: "Custom"
+                        text_color: 1, 1, 1, 1
+                        elevation: 3
+                        size_hint_x: None
+                        width: "56dp"

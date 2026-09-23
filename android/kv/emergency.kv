@@ -1,31 +1,90 @@
+#:import COLOR_SURFACE app.config.theme.COLOR_SURFACE
+#:import COLOR_SURFACE_CONTAINER app.config.theme.COLOR_SURFACE_CONTAINER
+#:import COLOR_EMERGENCY_RED app.config.theme.COLOR_EMERGENCY_RED
+#:import COLOR_TEXT_PRIMARY app.config.theme.COLOR_TEXT_PRIMARY
+#:import COLOR_SAFE_GREEN app.config.theme.COLOR_SAFE_GREEN
+
 <EmergencyScreen>:
+    md_bg_color: (0.12, 0.04, 0.04, 1.0)
+
     MDBoxLayout:
         orientation: "vertical"
         padding: "24dp"
-        spacing: "20dp"
-        md_bg_color: 0.2, 0.05, 0.05, 1
+        spacing: "18dp"
 
-        MDLabel:
-            text: "EMERGENCY ACTIVE"
-            font_style: "H4"
-            halign: "center"
-            theme_text_color: "Custom"
-            text_color: 1, 0.2, 0.2, 1
-            bold: True
+        # Active Distress Banner
+        MDBoxLayout:
+            orientation: "vertical"
+            adaptive_height: True
+            spacing: "6dp"
 
-        MDLabel:
-            text: "Alert sent to your trusted contacts. Continuous GPS tracking and audio monitoring are active."
-            halign: "center"
-            theme_text_color: "Secondary"
+            MDLabel:
+                text: "EMERGENCY ACTIVE"
+                halign: "center"
+                font_style: "H4"
+                bold: True
+                theme_text_color: "Custom"
+                text_color: COLOR_EMERGENCY_RED
 
+            MDLabel:
+                text: root.incident_status_text
+                halign: "center"
+                font_style: "Subtitle2"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+
+        # Telemetry & Evidence Recording Box
+        MDCard:
+            orientation: "vertical"
+            padding: "16dp"
+            spacing: "8dp"
+            md_bg_color: (0.18, 0.06, 0.06, 1.0)
+            radius: [16, 16, 16, 16]
+
+            MDLabel:
+                text: "Live GPS Telemetry Broadcasting"
+                font_style: "Subtitle2"
+                bold: True
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+
+            MDLabel:
+                text: root.current_coords_text
+                font_style: "Body2"
+                theme_text_color: "Custom"
+                text_color: (0.9, 0.8, 0.8, 1.0)
+
+            MDLabel:
+                text: "Ambient Audio Recording: ACTIVE"
+                font_style: "Caption"
+                bold: True
+                theme_text_color: "Custom"
+                text_color: COLOR_EMERGENCY_RED
+
+            MDLabel:
+                text: "Battery: " + str(root.battery_level) + "%"
+                font_style: "Caption"
+                theme_text_color: "Custom"
+                text_color: (0.8, 0.8, 0.8, 1.0)
+
+        # Priority 1 Direct Call Button
         MDRaisedButton:
-            text: "Call Emergency Dispatch (112 / 911)"
+            text: "CALL 911 / 112 DISPATCH DIRECTLY"
+            font_size: "16sp"
+            bold: True
             size_hint_x: 1
-            md_bg_color: 0.8, 0, 0, 1
+            height: "56dp"
+            md_bg_color: COLOR_EMERGENCY_RED
+            on_release: root.dial_dispatch()
 
+        # I AM SAFE Resolution Button
         MDRectangleFlatButton:
-            text: "I AM SAFE (CANCEL SOS)"
+            text: "I AM SAFE (CANCEL EMERGENCY)"
+            font_size: "16sp"
+            bold: True
             size_hint_x: 1
+            height: "56dp"
             theme_text_color: "Custom"
-            text_color: 0.3, 0.9, 0.3, 1
+            text_color: COLOR_SAFE_GREEN
+            line_color: COLOR_SAFE_GREEN
             on_release: root.cancel_emergency()

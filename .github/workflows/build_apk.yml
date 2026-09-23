@@ -1,0 +1,162 @@
+name: Build AlertX APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:     # Allow manual trigger from GitHub UI
+
+jobs:
+  build-apk:
+    name: Build Android APK
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+
+    steps:
+      # ── 1. Checkout ─────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Set up Python ────────────────────────────────────────────────
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # ── 3. Install system dependencies required by Buildozer ────────────
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            git zip unzip openjdk-17-jdk python3-pip \
+            build-essential ccache libncurses5 libstdc++6 \
+            libssl-dev libffi-dev python3-dev \
+            zlib1g-dev autoconf libtool libltdl-dev \
+            pkg-config cmake ninja-build \
+            ffmpeg libsdl2-dev libsdl2-image-dev \
+            libsdl2-mixer-dev libsdl2-ttf-dev
+
+      # ── 4. Cache Buildozer .buildozer directory (speeds up rebuilds) ────
+      - name: Cache Buildozer global directory
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.buildozer
+            android/.buildozer
+          key: buildozer-${{ runner.os }}-${{ hashFiles('android/buildozer.spec') }}
+          restore-keys: |
+            buildozer-${{ runner.os }}-
+
+      # ── 5. Cache pip ─────────────────────────────────────────────────────
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+
+      # ── 6. Install Buildozer & Cython ────────────────────────────────────
+      - name: Install Buildozer and Cython
+        run: |
+          pip install --upgrade pip wheel setuptools
+          pip install buildozer Cython==0.29.36
+
+      # ── 7. Accept Android SDK licenses ──────────────────────────────────
+      - name: Accept Android SDK licenses
+        run: |
+          mkdir -p ~/.android
+          echo "count=0" > ~/.android/repositories.cfg
+          yes | sdkmanager --licenses 2>/dev/null || true
+        env:
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+
+      # ── 8. Build debug APK ───────────────────────────────────────────────
+      - name: Build AlertX debug APK
+        working-directory: android
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+        run: |
+          buildozer android debug 2>&1 | tee build.log
+          echo "--- Build completed ---"
+          ls -lh bin/ 2>/dev/null || echo "No bin/ directory found"
+
+      # ── 9. Upload APK as workflow artifact (always available) ────────────
+      - name: Upload APK artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: alertx-debug-apk
+          path: android/bin/*.apk
+          retention-days: 30
+
+      # ── 10. Upload build log on failure ──────────────────────────────────
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: android/build.log
+          retention-days: 7
+
+  # ── Release job: runs only on push to main ──────────────────────────────
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-22.04
+    needs: build-apk
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Download the APK artifact from build-apk job
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: alertx-debug-apk
+          path: ./release-assets
+
+      - name: List release assets
+        run: ls -lh ./release-assets/
+
+      # Create a release with a tag based on the commit SHA
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v2.0.0-build-${{ github.run_number }}
+          name: AlertX v2.0.0 — Build ${{ github.run_number }}
+          body: |
+            ## AlertX Android APK
+
+            **Build**: #${{ github.run_number }}
+            **Commit**: `${{ github.sha }}`
+            **Branch**: `${{ github.ref_name }}`
+
+            ### Installation
+            1. Download the `alertx-debug-apk` file below
+            2. Transfer it to your Android device
+            3. Enable **Install from Unknown Sources** in Settings → Security
+            4. Tap the APK to install
+
+            ### What's Included
+            - ✅ Instant 1-tap SOS (zero countdown)
+            - ✅ 5-tap rapid SOS detector
+            - ✅ Live GPS location sharing
+            - ✅ Emergency contact management with priority calling
+            - ✅ Safety timer with auto-escalation
+            - ✅ Emergency guides (CPR, Earthquake, Fire, First Aid, Flood, Heimlich)
+            - ✅ Evidence vault (audio + photo recording)
+            - ✅ Community incident reporting (with offline queue)
+            - ✅ Fake call escape tool
+            - ✅ Nearby emergency services quick-dial
+            - ✅ Medical profile for emergency responders
+
+            > **Note**: This is a debug build. For production release, set up your keystore and use `buildozer android release`.
+          files: |
+            ./release-assets/*.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

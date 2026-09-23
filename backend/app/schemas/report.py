@@ -2,25 +2,22 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 
-class IncidentReportCreate(BaseModel):
-    incident_type: str
-    title: str
+class CommunityReportCreate(BaseModel):
+    type: str  # ACCIDENT, FIRE, ROAD_HAZARD, UNSAFE_LOCATION, FLOODING, OTHER
     description: str
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
-    address: Optional[str] = None
-    is_anonymous: str = "NO"
+    latitude: float
+    longitude: float
+    media_reference: Optional[str] = None
 
-class IncidentReportResponse(BaseModel):
+class CommunityReportResponse(BaseModel):
     id: int
     user_id: int
-    incident_type: str
-    title: str
+    type: str
     description: str
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
-    address: Optional[str] = None
-    is_anonymous: str
+    latitude: float
+    longitude: float
+    media_reference: Optional[str] = None
+    status: str
     created_at: datetime
     class Config:
         from_attributes = True

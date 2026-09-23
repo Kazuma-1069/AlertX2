@@ -1,13 +1,105 @@
+#:import COLOR_SURFACE            app.config.theme.COLOR_SURFACE
+#:import COLOR_SURFACE_CONTAINER  app.config.theme.COLOR_SURFACE_CONTAINER
+#:import COLOR_SURFACE_CONTAINER_LOW app.config.theme.COLOR_SURFACE_CONTAINER_LOW
+#:import COLOR_SURFACE_CONTAINER_HIGH app.config.theme.COLOR_SURFACE_CONTAINER_HIGH
+#:import COLOR_EMERGENCY_RED      app.config.theme.COLOR_EMERGENCY_RED
+#:import COLOR_TIMER_AMBER        app.config.theme.COLOR_TIMER_AMBER
+#:import COLOR_SAFE_GREEN         app.config.theme.COLOR_SAFE_GREEN
+#:import COLOR_TEXT_PRIMARY       app.config.theme.COLOR_TEXT_PRIMARY
+#:import COLOR_TEXT_MUTED         app.config.theme.COLOR_TEXT_MUTED
+#:import RADIUS_MD                app.config.theme.RADIUS_MD
+#:import RADIUS_LG                app.config.theme.RADIUS_LG
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  IncidentScreen  –  Incident History List
+# ─────────────────────────────────────────────────────────────────────────────
+
 <IncidentScreen>:
+    md_bg_color: COLOR_SURFACE
+
     MDBoxLayout:
         orientation: "vertical"
-        padding: "16dp"
-        spacing: "12dp"
 
-        MDTopAppBar:
-            title: "Incident Telemetry"
-            left_action_items: [["arrow-left", lambda x: setattr(root.manager, "current", "home")]]
+        # ── Top App Bar ───────────────────────────────────────────────────────
+        MDBoxLayout:
+            size_hint_y: None
+            height: "56dp"
+            padding: ["8dp", "8dp", "16dp", "8dp"]
+            spacing: "4dp"
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
 
-        MDLabel:
-            text: "Real-time Telemetry & Log"
-            font_style: "Subtitle1"
+            MDIconButton:
+                icon: "arrow-left"
+                size_hint: None, None
+                size: "40dp", "40dp"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+                on_release: root.go_back()
+
+            MDLabel:
+                text: "Incident History"
+                font_style: "H6"
+                bold: True
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+                valign: "center"
+
+        # ── Stat card: total count ─────────────────────────────────────────
+        MDBoxLayout:
+            size_hint_y: None
+            height: "72dp"
+            padding: ["16dp", "8dp", "16dp", "8dp"]
+
+            MDCard:
+                md_bg_color: COLOR_EMERGENCY_RED
+                radius: [RADIUS_MD, RADIUS_MD, RADIUS_MD, RADIUS_MD]
+                padding: ["16dp", "10dp", "16dp", "10dp"]
+
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    spacing: "10dp"
+
+                    MDLabel:
+                        id: stat_label
+                        text: "0  Total Incidents"
+                        font_style: "H6"
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: [1, 1, 1, 1]
+                        valign: "center"
+
+                    MDLabel:
+                        text: "📋"
+                        font_size: "24sp"
+                        size_hint_x: None
+                        width: "36dp"
+                        halign: "right"
+                        valign: "center"
+
+        # ── Section label ─────────────────────────────────────────────────
+        MDBoxLayout:
+            size_hint_y: None
+            height: "32dp"
+            padding: ["16dp", "4dp", "16dp", "4dp"]
+
+            MDLabel:
+                text: "Past SOS Events"
+                font_style: "Subtitle1"
+                bold: True
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+
+        # ── Scrollable incident card list ─────────────────────────────────
+        ScrollView:
+            do_scroll_x: False
+            bar_width: "4dp"
+            bar_color: COLOR_EMERGENCY_RED
+
+            MDBoxLayout:
+                id: incident_list
+                orientation: "vertical"
+                size_hint_y: None
+                spacing: "10dp"
+                padding: ["16dp", "4dp", "16dp", "20dp"]
+                # height is set dynamically from Python
+                height: self.minimum_height

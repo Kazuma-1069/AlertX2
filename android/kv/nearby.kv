@@ -1,0 +1,289 @@
+<NearbyScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        md_bg_color: 0.051, 0.067, 0.090, 1  # #0D1117
+
+        # ── Top Bar ──────────────────────────────────────────
+        MDBoxLayout:
+            size_hint_y: None
+            height: "56dp"
+            padding: "16dp", "8dp"
+            spacing: "12dp"
+            md_bg_color: 0.086, 0.106, 0.133, 1  # #161B22
+
+            MDIconButton:
+                icon: "arrow-left"
+                theme_icon_color: "Custom"
+                icon_color: 0.941, 0.965, 0.988, 1  # #F0F6FC
+                on_release: root.go_back()
+
+            MDLabel:
+                text: "Nearby Emergency Services"
+                font_style: "H6"
+                theme_text_color: "Custom"
+                text_color: 0.941, 0.965, 0.988, 1
+                bold: True
+
+        # ── Tap-to-call hint ─────────────────────────────────
+        MDLabel:
+            size_hint_y: None
+            height: "32dp"
+            text: "  Tap any service to call immediately"
+            font_style: "Caption"
+            theme_text_color: "Custom"
+            text_color: 0.545, 0.580, 0.620, 1  # #8B949E
+            padding: "16dp", 0
+
+        # ── Service List ─────────────────────────────────────
+        ScrollView:
+            MDList:
+                id: services_list
+                padding: "8dp"
+
+                # Police
+                MDCard:
+                    size_hint_y: None
+                    height: "72dp"
+                    md_bg_color: 0.086, 0.106, 0.133, 1
+                    radius: [8]
+                    padding: "16dp", "8dp"
+                    spacing: "12dp"
+                    orientation: 'horizontal'
+                    on_release: root.call_service("100", "Police")
+                    MDBoxLayout:
+                        size_hint_x: None
+                        width: "40dp"
+                        MDIcon:
+                            icon: "shield-account"
+                            theme_text_color: "Custom"
+                            text_color: 0.851, 0.176, 0.125, 1  # crimson
+                            font_size: "32sp"
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Police Station"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: 0.941, 0.965, 0.988, 1
+                            font_size: "16sp"
+                        MDLabel:
+                            text: "Dial 100"
+                            theme_text_color: "Custom"
+                            text_color: 0.545, 0.580, 0.620, 1
+                            font_size: "13sp"
+                    MDIcon:
+                        icon: "phone"
+                        theme_text_color: "Custom"
+                        text_color: 0.851, 0.176, 0.125, 1
+                        size_hint_x: None
+                        width: "32dp"
+
+                Widget:
+                    size_hint_y: None
+                    height: "8dp"
+
+                # Fire
+                MDCard:
+                    size_hint_y: None
+                    height: "72dp"
+                    md_bg_color: 0.086, 0.106, 0.133, 1
+                    radius: [8]
+                    padding: "16dp", "8dp"
+                    spacing: "12dp"
+                    orientation: 'horizontal'
+                    on_release: root.call_service("101", "Fire Brigade")
+                    MDBoxLayout:
+                        size_hint_x: None
+                        width: "40dp"
+                        MDIcon:
+                            icon: "fire-truck"
+                            theme_text_color: "Custom"
+                            text_color: 0.914, 0.639, 0.098, 1  # amber
+                            font_size: "32sp"
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Fire Station"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: 0.941, 0.965, 0.988, 1
+                            font_size: "16sp"
+                        MDLabel:
+                            text: "Dial 101"
+                            theme_text_color: "Custom"
+                            text_color: 0.545, 0.580, 0.620, 1
+                            font_size: "13sp"
+                    MDIcon:
+                        icon: "phone"
+                        theme_text_color: "Custom"
+                        text_color: 0.914, 0.639, 0.098, 1
+                        size_hint_x: None
+                        width: "32dp"
+
+                Widget:
+                    size_hint_y: None
+                    height: "8dp"
+
+                # Ambulance
+                MDCard:
+                    size_hint_y: None
+                    height: "72dp"
+                    md_bg_color: 0.086, 0.106, 0.133, 1
+                    radius: [8]
+                    padding: "16dp", "8dp"
+                    spacing: "12dp"
+                    orientation: 'horizontal'
+                    on_release: root.call_service("108", "Ambulance")
+                    MDBoxLayout:
+                        size_hint_x: None
+                        width: "40dp"
+                        MDIcon:
+                            icon: "hospital-building"
+                            theme_text_color: "Custom"
+                            text_color: 0.180, 0.627, 0.263, 1  # green
+                            font_size: "32sp"
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Hospital / Ambulance"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: 0.941, 0.965, 0.988, 1
+                            font_size: "16sp"
+                        MDLabel:
+                            text: "Dial 108"
+                            theme_text_color: "Custom"
+                            text_color: 0.545, 0.580, 0.620, 1
+                            font_size: "13sp"
+                    MDIcon:
+                        icon: "phone"
+                        theme_text_color: "Custom"
+                        text_color: 0.180, 0.627, 0.263, 1
+                        size_hint_x: None
+                        width: "32dp"
+
+                Widget:
+                    size_hint_y: None
+                    height: "8dp"
+
+                # Women's Helpline
+                MDCard:
+                    size_hint_y: None
+                    height: "72dp"
+                    md_bg_color: 0.086, 0.106, 0.133, 1
+                    radius: [8]
+                    padding: "16dp", "8dp"
+                    spacing: "12dp"
+                    orientation: 'horizontal'
+                    on_release: root.call_service("1091", "Women Helpline")
+                    MDBoxLayout:
+                        size_hint_x: None
+                        width: "40dp"
+                        MDIcon:
+                            icon: "human-female"
+                            theme_text_color: "Custom"
+                            text_color: 0.851, 0.176, 0.125, 1
+                            font_size: "32sp"
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Women's Helpline"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: 0.941, 0.965, 0.988, 1
+                            font_size: "16sp"
+                        MDLabel:
+                            text: "Dial 1091"
+                            theme_text_color: "Custom"
+                            text_color: 0.545, 0.580, 0.620, 1
+                            font_size: "13sp"
+                    MDIcon:
+                        icon: "phone"
+                        theme_text_color: "Custom"
+                        text_color: 0.851, 0.176, 0.125, 1
+                        size_hint_x: None
+                        width: "32dp"
+
+                Widget:
+                    size_hint_y: None
+                    height: "8dp"
+
+                # Child Helpline
+                MDCard:
+                    size_hint_y: None
+                    height: "72dp"
+                    md_bg_color: 0.086, 0.106, 0.133, 1
+                    radius: [8]
+                    padding: "16dp", "8dp"
+                    spacing: "12dp"
+                    orientation: 'horizontal'
+                    on_release: root.call_service("1098", "Child Helpline")
+                    MDBoxLayout:
+                        size_hint_x: None
+                        width: "40dp"
+                        MDIcon:
+                            icon: "human-child"
+                            theme_text_color: "Custom"
+                            text_color: 0.914, 0.639, 0.098, 1
+                            font_size: "32sp"
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Child Helpline"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: 0.941, 0.965, 0.988, 1
+                            font_size: "16sp"
+                        MDLabel:
+                            text: "Dial 1098"
+                            theme_text_color: "Custom"
+                            text_color: 0.545, 0.580, 0.620, 1
+                            font_size: "13sp"
+                    MDIcon:
+                        icon: "phone"
+                        theme_text_color: "Custom"
+                        text_color: 0.914, 0.639, 0.098, 1
+                        size_hint_x: None
+                        width: "32dp"
+
+                Widget:
+                    size_hint_y: None
+                    height: "8dp"
+
+                # Disaster Management
+                MDCard:
+                    size_hint_y: None
+                    height: "72dp"
+                    md_bg_color: 0.086, 0.106, 0.133, 1
+                    radius: [8]
+                    padding: "16dp", "8dp"
+                    spacing: "12dp"
+                    orientation: 'horizontal'
+                    on_release: root.call_service("108", "Disaster Management")
+                    MDBoxLayout:
+                        size_hint_x: None
+                        width: "40dp"
+                        MDIcon:
+                            icon: "alert-octagon"
+                            theme_text_color: "Custom"
+                            text_color: 0.851, 0.176, 0.125, 1
+                            font_size: "32sp"
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Disaster Management"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: 0.941, 0.965, 0.988, 1
+                            font_size: "16sp"
+                        MDLabel:
+                            text: "Dial 108"
+                            theme_text_color: "Custom"
+                            text_color: 0.545, 0.580, 0.620, 1
+                            font_size: "13sp"
+                    MDIcon:
+                        icon: "phone"
+                        theme_text_color: "Custom"
+                        text_color: 0.851, 0.176, 0.125, 1
+                        size_hint_x: None
+                        width: "32dp"

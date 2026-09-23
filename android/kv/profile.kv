@@ -1,25 +1,155 @@
+#:import COLOR_SURFACE app.config.theme.COLOR_SURFACE
+#:import COLOR_SURFACE_CONTAINER app.config.theme.COLOR_SURFACE_CONTAINER
+#:import COLOR_SURFACE_CONTAINER_LOW app.config.theme.COLOR_SURFACE_CONTAINER_LOW
+#:import COLOR_SURFACE_CONTAINER_HIGH app.config.theme.COLOR_SURFACE_CONTAINER_HIGH
+#:import COLOR_TRACKING_BLUE app.config.theme.COLOR_TRACKING_BLUE
+#:import COLOR_TEXT_PRIMARY app.config.theme.COLOR_TEXT_PRIMARY
+#:import COLOR_TEXT_MUTED app.config.theme.COLOR_TEXT_MUTED
+
 <ProfileScreen>:
+    md_bg_color: COLOR_SURFACE
+
     MDBoxLayout:
         orientation: "vertical"
-        padding: "16dp"
-        spacing: "12dp"
 
-        MDTopAppBar:
-            title: "Personal Profile"
-            left_action_items: [["arrow-left", lambda x: setattr(root.manager, "current", "home")]]
+        # Top Bar
+        MDBoxLayout:
+            size_hint_y: None
+            height: "56dp"
+            padding: ["16dp", "8dp", "16dp", "8dp"]
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
 
-        MDLabel:
-            text: "Medical & Emergency Profile"
-            font_style: "Subtitle1"
+            MDIconButton:
+                icon: "arrow-left"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+                on_release: root.open_section("home")
 
-        MDTextField:
-            hint_text: "Blood Type (e.g. O+)"
-            mode: "rectangle"
+            MDLabel:
+                text: "PROFILE & SOS CONFIGURATION"
+                font_style: "Subtitle1"
+                bold: True
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
 
-        MDTextField:
-            hint_text: "Allergies or Medical Conditions"
-            mode: "rectangle"
+        ScrollView:
+            MDBoxLayout:
+                orientation: "vertical"
+                padding: "16dp"
+                spacing: "14dp"
+                adaptive_height: True
 
-        MDRaisedButton:
-            text: "Save Medical Profile"
-            size_hint_x: 1
+                # Medical Profile Card
+                MDCard:
+                    orientation: "vertical"
+                    padding: "16dp"
+                    spacing: "10dp"
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [14, 14, 14, 14]
+                    adaptive_height: True
+
+                    MDLabel:
+                        text: "Emergency Medical Information"
+                        font_style: "Subtitle2"
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_PRIMARY
+
+                    MDLabel:
+                        text: "Information is private and strictly opt-in for first responders."
+                        font_style: "Caption"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_MUTED
+
+                    MDTextField:
+                        id: blood_group_input
+                        text: root.blood_group
+                        hint_text: "Blood Group (e.g. O+, A-)"
+                        mode: "rectangle"
+
+                    MDTextField:
+                        id: allergies_input
+                        text: root.allergies
+                        hint_text: "Known Allergies / Medical Notes"
+                        mode: "rectangle"
+
+                    MDRaisedButton:
+                        text: "Save Medical Profile"
+                        size_hint_x: 1
+                        md_bg_color: COLOR_TRACKING_BLUE
+                        on_release: root.save_medical(blood_group_input.text, allergies_input.text)
+
+                # SOS Trigger Settings
+                MDCard:
+                    orientation: "vertical"
+                    padding: "16dp"
+                    spacing: "8dp"
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [14, 14, 14, 14]
+                    adaptive_height: True
+
+                    MDLabel:
+                        text: "Hardware & Trigger Settings"
+                        font_style: "Subtitle2"
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_PRIMARY
+
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        MDLabel:
+                            text: "5-Tap Power Key Emergency SOS"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+                        MDSwitch:
+                            active: True
+
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        MDLabel:
+                            text: "Auto Ambient Audio Recording"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+                        MDSwitch:
+                            active: True
+
+        # 5-Tab Navigation Bar
+        MDBoxLayout:
+            size_hint_y: None
+            height: "64dp"
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
+
+            MDIconButton:
+                icon: "home"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("home")
+
+            MDIconButton:
+                icon: "shield"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("safety")
+
+            MDIconButton:
+                icon: "book-open-page-variant"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("guides")
+
+            MDIconButton:
+                icon: "account-multiple"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("contacts")
+
+            MDIconButton:
+                icon: "account"
+                theme_text_color: "Custom"
+                text_color: COLOR_TRACKING_BLUE
+                size_hint_x: 0.2
+                on_release: root.open_section("profile")

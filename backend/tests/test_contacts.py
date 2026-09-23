@@ -1,13 +1,14 @@
-from app.schemas.contact import ContactCreate
+from app.schemas.contact import EmergencyContactCreate
 
 def test_contact_schema_validation():
-    contact = ContactCreate(
+    contact = EmergencyContactCreate(
         name="Jane Doe",
-        phone_number="+15551234567",
+        phone="+15551234567",
         relationship="Sister",
-        is_primary=True,
-        receive_sms=True,
-        receive_call=True
+        priority=1,
+        receive_sos=True,
+        receive_location=True
     )
     assert contact.name == "Jane Doe"
-    assert contact.is_primary is True
+    assert contact.priority == 1
+    assert contact.receive_sos is True

@@ -1,25 +1,136 @@
+#:import COLOR_SURFACE app.config.theme.COLOR_SURFACE
+#:import COLOR_SURFACE_CONTAINER app.config.theme.COLOR_SURFACE_CONTAINER
+#:import COLOR_SURFACE_CONTAINER_LOW app.config.theme.COLOR_SURFACE_CONTAINER_LOW
+#:import COLOR_SURFACE_CONTAINER_HIGH app.config.theme.COLOR_SURFACE_CONTAINER_HIGH
+#:import COLOR_TRACKING_BLUE app.config.theme.COLOR_TRACKING_BLUE
+#:import COLOR_TEXT_PRIMARY app.config.theme.COLOR_TEXT_PRIMARY
+#:import COLOR_TEXT_MUTED app.config.theme.COLOR_TEXT_MUTED
+
 <ContactsScreen>:
+    md_bg_color: COLOR_SURFACE
+
     MDBoxLayout:
         orientation: "vertical"
-        padding: "16dp"
-        spacing: "12dp"
 
-        MDTopAppBar:
-            title: "Emergency Contacts"
-            left_action_items: [["arrow-left", lambda x: setattr(root.manager, "current", "home")]]
+        # Top Bar
+        MDBoxLayout:
+            size_hint_y: None
+            height: "56dp"
+            padding: ["16dp", "8dp", "16dp", "8dp"]
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
 
-        MDLabel:
-            text: "Your Trusted Circle"
-            font_style: "Subtitle1"
+            MDIconButton:
+                icon: "arrow-left"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+                on_release: root.open_section("home")
 
-        MDTextField:
-            hint_text: "Contact Name"
-            mode: "rectangle"
+            MDLabel:
+                text: "EMERGENCY CONTACTS (CIRCLE)"
+                font_style: "Subtitle1"
+                bold: True
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
 
-        MDTextField:
-            hint_text: "Phone Number (+1...)"
-            mode: "rectangle"
+        ScrollView:
+            MDBoxLayout:
+                orientation: "vertical"
+                padding: "16dp"
+                spacing: "12dp"
+                adaptive_height: True
 
-        MDRaisedButton:
-            text: "Add Emergency Contact"
-            size_hint_x: 1
+                # Priority Info Banner
+                MDCard:
+                    orientation: "vertical"
+                    padding: "12dp"
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [12, 12, 12, 12]
+
+                    MDLabel:
+                        text: "Priority-Tiered Emergency Dispatch"
+                        font_style: "Subtitle2"
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_PRIMARY
+
+                    MDLabel:
+                        text: "During SOS, Priority 1 contact receives an immediate phone call. All priority contacts receive instant SMS and live GPS tracking."
+                        font_style: "Caption"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_MUTED
+
+                # Add Contact Form Card
+                MDCard:
+                    orientation: "vertical"
+                    padding: "16dp"
+                    spacing: "10dp"
+                    md_bg_color: COLOR_SURFACE_CONTAINER_HIGH
+                    radius: [14, 14, 14, 14]
+                    adaptive_height: True
+
+                    MDLabel:
+                        text: "Add New Emergency Contact"
+                        font_style: "Subtitle2"
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_PRIMARY
+
+                    MDTextField:
+                        id: contact_name_input
+                        hint_text: "Contact Name (e.g. Sarah Connor)"
+                        mode: "rectangle"
+
+                    MDTextField:
+                        id: contact_phone_input
+                        hint_text: "Phone Number (e.g. +1 555-0192)"
+                        mode: "rectangle"
+
+                    MDRaisedButton:
+                        text: "Save Priority Contact"
+                        size_hint_x: 1
+                        md_bg_color: COLOR_TRACKING_BLUE
+                        on_release:
+                            root.add_emergency_contact(contact_name_input.text, contact_phone_input.text, 1)
+                            contact_name_input.text = ""
+                            contact_phone_input.text = ""
+
+        # 5-Tab Navigation Bar
+        MDBoxLayout:
+            size_hint_y: None
+            height: "64dp"
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
+
+            MDIconButton:
+                icon: "home"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("home")
+
+            MDIconButton:
+                icon: "shield"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("safety")
+
+            MDIconButton:
+                icon: "book-open-page-variant"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("guides")
+
+            MDIconButton:
+                icon: "account-multiple"
+                theme_text_color: "Custom"
+                text_color: COLOR_TRACKING_BLUE
+                size_hint_x: 0.2
+                on_release: root.open_section("contacts")
+
+            MDIconButton:
+                icon: "account"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("profile")

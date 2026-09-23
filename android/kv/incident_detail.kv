@@ -1,0 +1,174 @@
+#:import COLOR_SURFACE               app.config.theme.COLOR_SURFACE
+#:import COLOR_SURFACE_CONTAINER     app.config.theme.COLOR_SURFACE_CONTAINER
+#:import COLOR_SURFACE_CONTAINER_LOW app.config.theme.COLOR_SURFACE_CONTAINER_LOW
+#:import COLOR_SURFACE_CONTAINER_HIGH app.config.theme.COLOR_SURFACE_CONTAINER_HIGH
+#:import COLOR_EMERGENCY_RED         app.config.theme.COLOR_EMERGENCY_RED
+#:import COLOR_TIMER_AMBER           app.config.theme.COLOR_TIMER_AMBER
+#:import COLOR_SAFE_GREEN            app.config.theme.COLOR_SAFE_GREEN
+#:import COLOR_TEXT_PRIMARY          app.config.theme.COLOR_TEXT_PRIMARY
+#:import COLOR_TEXT_MUTED            app.config.theme.COLOR_TEXT_MUTED
+#:import RADIUS_MD                   app.config.theme.RADIUS_MD
+#:import RADIUS_LG                   app.config.theme.RADIUS_LG
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  IncidentDetailScreen  –  Incident Timeline + Evidence Vault
+# ─────────────────────────────────────────────────────────────────────────────
+
+<IncidentDetailScreen>:
+    md_bg_color: COLOR_SURFACE
+
+    MDBoxLayout:
+        orientation: "vertical"
+
+        # ── Dark header bar ───────────────────────────────────────────────────
+        MDBoxLayout:
+            size_hint_y: None
+            height: "64dp"
+            padding: ["8dp", "8dp", "16dp", "8dp"]
+            spacing: "8dp"
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
+
+            MDIconButton:
+                icon: "arrow-left"
+                size_hint: None, None
+                size: "40dp", "40dp"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+                on_release: root.go_back()
+
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: "2dp"
+
+                MDLabel:
+                    id: incident_title
+                    text: "Incident Detail"
+                    font_style: "H6"
+                    bold: True
+                    theme_text_color: "Custom"
+                    text_color: COLOR_TEXT_PRIMARY
+                    valign: "bottom"
+                    size_hint_y: None
+                    height: "28dp"
+
+                MDLabel:
+                    text: "Evidence Vault"
+                    font_style: "Caption"
+                    theme_text_color: "Custom"
+                    text_color: COLOR_EMERGENCY_RED
+                    valign: "top"
+                    size_hint_y: None
+                    height: "18dp"
+
+        # ── Scrollable body ───────────────────────────────────────────────────
+        ScrollView:
+            do_scroll_x: False
+            bar_width: "4dp"
+            bar_color: COLOR_EMERGENCY_RED
+
+            MDBoxLayout:
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: "16dp"
+                padding: ["16dp", "12dp", "16dp", "24dp"]
+
+                # ── Timeline section header ───────────────────────────────
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: "40dp"
+                    padding: [0, "4dp", 0, "4dp"]
+
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        spacing: "8dp"
+
+                        MDBoxLayout:
+                            size_hint_x: None
+                            width: "4dp"
+                            md_bg_color: COLOR_EMERGENCY_RED
+
+                        MDLabel:
+                            text: "Timeline"
+                            font_style: "H6"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                # ── Timeline separator ────────────────────────────────────
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: "1dp"
+                    md_bg_color: [0.188, 0.212, 0.227, 1]  # BORDER #30363D
+
+                # ── Timeline events list ──────────────────────────────────
+                MDBoxLayout:
+                    id: timeline_list
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: "4dp"
+                    # Rows are added from Python (IncidentDetailScreen._fill_timeline)
+
+                # ── Evidence Vault section header ─────────────────────────
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: "40dp"
+                    padding: [0, "8dp", 0, "4dp"]
+
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        spacing: "8dp"
+
+                        MDBoxLayout:
+                            size_hint_x: None
+                            width: "4dp"
+                            md_bg_color: COLOR_TIMER_AMBER
+
+                        MDLabel:
+                            text: "Evidence Vault"
+                            font_style: "H6"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                # ── Evidence separator ────────────────────────────────────
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: "1dp"
+                    md_bg_color: [0.188, 0.212, 0.227, 1]
+
+                # ── Evidence items list ───────────────────────────────────
+                MDBoxLayout:
+                    id: evidence_list
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: "8dp"
+                    # Rows are added from Python (IncidentDetailScreen._fill_evidence)
+
+                # ── Action buttons ────────────────────────────────────────
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: "56dp"
+                    spacing: "12dp"
+                    padding: [0, "4dp", 0, "4dp"]
+
+                    # Record Evidence – crimson filled button
+                    MDRaisedButton:
+                        text: "  Record Evidence"
+                        icon: "microphone"
+                        md_bg_color: COLOR_EMERGENCY_RED
+                        theme_text_color: "Custom"
+                        text_color: [1, 1, 1, 1]
+                        size_hint_x: 1
+                        on_release: root.on_record_pressed()
+
+                    # Export Report – amber outlined / flat button
+                    MDFlatButton:
+                        text: "Export Report"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TIMER_AMBER
+                        size_hint_x: None
+                        width: "130dp"
+                        on_release: root.on_export_pressed()

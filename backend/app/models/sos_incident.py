@@ -7,22 +7,19 @@ class SOSIncident(Base):
     __tablename__ = "sos_incidents"
 
     id = Column(Integer, primary_key=True, index=True)
-    incident_uuid = Column(String(36), unique=True, index=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
-    trigger_type = Column(String(50), default="MANUAL_BUTTON")  # MANUAL_BUTTON, HARDWARE_KEY, TIMER_EXPIRY, FALL_DETECTED
-    status = Column(String(50), default="ACTIVE", index=True)  # ACTIVE, RESOLVED, CANCELLED, FALSE_ALARM
-    initial_latitude = Column(Float, nullable=False)
-    initial_longitude = Column(Float, nullable=False)
-    initial_address = Column(String(500), nullable=True)
-    battery_level = Column(Integer, nullable=True)
-    network_status = Column(String(50), nullable=True)
-    description = Column(Text, nullable=True)
+    status = Column(String(50), default="ACTIVE", index=True, nullable=False)  # ACTIVE, RESOLVED, CANCELLED
+    activation_method = Column(String(50), default="BUTTON", nullable=False)  # BUTTON, FIVE_TAP, TIMER_EXPIRY, FALL_DETECTED
+    started_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     resolved_at = Column(DateTime, nullable=True)
-    resolution_notes = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    cancelled_at = Column(DateTime, nullable=True)
+    last_latitude = Column(Float, nullable=False)
+    last_longitude = Column(Float, nullable=False)
+    location_accuracy = Column(Float, nullable=True)
+    idempotency_key = Column(String(64), unique=True, index=True, nullable=True)
 
-    user = relationship("User", back_populates="incidents")
+    user = relationship("User", back_populates="sos_incidents")
+    tracking_sessions = relationship("TrackingSession", back_populates="incident", cascade="all, delete-orphan")
+    events = relationship("IncidentEvent", back_populates="incident", cascade="all, delete-orphan", order_by="IncidentEvent.timestamp")
+    evidences = relationship("Evidence", back_populates="incident", cascade="all, delete-orphan")
     breadcrumbs = relationship("LocationBreadcrumb", back_populates="incident", cascade="all, delete-orphan")
-    evidences = relationship("IncidentEvidence", back_populates="incident", cascade="all, delete-orphan")
-    notifications = relationship("NotificationLog", back_populates="incident", cascade="all, delete-orphan")
-    calls = relationship("CallLog", back_populates="incident", cascade="all, delete-orphan")

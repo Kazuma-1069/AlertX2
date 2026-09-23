@@ -1,12 +1,11 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class SafetyTimerCreate(BaseModel):
+    duration_minutes: int  # 5, 15, 30, 60, custom
     title: str = "Walking Alone"
-    duration_minutes: int
-    destination_name: Optional[str] = None
-    pin: Optional[str] = None
+    destination: Optional[str] = None
 
 class SafetyTimerCancelRequest(BaseModel):
     timer_id: int
@@ -15,13 +14,10 @@ class SafetyTimerCancelRequest(BaseModel):
 class SafetyTimerResponse(BaseModel):
     id: int
     user_id: int
-    title: str
-    duration_minutes: int
-    start_time: datetime
+    duration: int
+    started_at: datetime
     expires_at: datetime
-    is_active: bool
-    is_completed: bool
-    triggered_sos: bool
-    destination_name: Optional[str] = None
-    class Config:
-        from_attributes = True
+    status: str
+    title: str
+    destination: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)

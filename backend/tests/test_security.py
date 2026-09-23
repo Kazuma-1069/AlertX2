@@ -1,3 +1,4 @@
+import pytest
 from app.core.security import create_access_token
 from jose import jwt
 from app.core.config import settings

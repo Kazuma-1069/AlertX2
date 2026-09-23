@@ -1,39 +1,58 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Environments
-.env
-.env.local
+# Virtual environments
+venv/
 .venv/
 env/
-venv/
 ENV/
+
+# Buildozer outputs
+android/.buildozer/
+android/bin/
+android/build.log
+.buildozer/
+bin/
+
+# Local data (user-specific)
+alertx_local_store.json
+backend/alertx_local_store.json
+android/local_data/
 
 # Database
 *.db
 *.sqlite3
-data/
+*.sqlite
 
-# Logs
-*.log
-logs/
+# Environment variables
+.env
+.env.*
+!.env.example
 
-# Build & Distribution
-dist/
-build/
-*.egg-info/
-.buildozer/
-bin/
-
-# IDE & Editor
-.vscode/
+# IDE / Editor
 .idea/
+.vscode/
 *.swp
 *.swo
-
-# OS files
 .DS_Store
 Thumbs.db
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Kivy cache
+.kivy/

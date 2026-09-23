@@ -1,22 +1,197 @@
+#:import COLOR_SURFACE app.config.theme.COLOR_SURFACE
+#:import COLOR_SURFACE_CONTAINER app.config.theme.COLOR_SURFACE_CONTAINER
+#:import COLOR_SURFACE_CONTAINER_LOW app.config.theme.COLOR_SURFACE_CONTAINER_LOW
+#:import COLOR_SURFACE_CONTAINER_HIGH app.config.theme.COLOR_SURFACE_CONTAINER_HIGH
+#:import COLOR_TRACKING_BLUE app.config.theme.COLOR_TRACKING_BLUE
+#:import COLOR_TIMER_AMBER app.config.theme.COLOR_TIMER_AMBER
+#:import COLOR_TEXT_PRIMARY app.config.theme.COLOR_TEXT_PRIMARY
+#:import COLOR_TEXT_MUTED app.config.theme.COLOR_TEXT_MUTED
+#:import COLOR_SAFE_GREEN app.config.theme.COLOR_SAFE_GREEN
+
 <SafetyScreen>:
+    md_bg_color: COLOR_SURFACE
+
     MDBoxLayout:
         orientation: "vertical"
-        padding: "16dp"
-        spacing: "16dp"
 
-        MDTopAppBar:
-            title: "Safety Timers"
-            left_action_items: [["arrow-left", lambda x: setattr(root.manager, "current", "home")]]
+        # Top Bar
+        MDBoxLayout:
+            size_hint_y: None
+            height: "56dp"
+            padding: ["16dp", "8dp", "16dp", "8dp"]
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
 
-        MDLabel:
-            text: "Automated Check-in Countdown"
-            font_style: "H6"
+            MDIconButton:
+                icon: "arrow-left"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+                on_release: root.open_section("home")
 
-        MDTextField:
-            hint_text: "Destination or Note (e.g. Walking home)"
-            mode: "rectangle"
+            MDLabel:
+                text: "SAFETY TOOLS & TIMERS"
+                font_style: "Subtitle1"
+                bold: True
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
 
-        MDRaisedButton:
-            text: "Start 15-Minute Safety Timer"
-            size_hint_x: 1
-            on_release: root.manager.current = "home"
+        ScrollView:
+            MDBoxLayout:
+                orientation: "vertical"
+                padding: "16dp"
+                spacing: "16dp"
+                adaptive_height: True
+
+                # Active Countdown Card (Stitch timer display)
+                MDCard:
+                    orientation: "vertical"
+                    padding: "20dp"
+                    spacing: "12dp"
+                    size_hint_y: None
+                    height: "220dp"
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [16, 16, 16, 16]
+
+                    MDLabel:
+                        text: "SAFETY TIMER COUNTDOWN"
+                        font_style: "Caption"
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TIMER_AMBER
+
+                    MDLabel:
+                        text: root.timer_display
+                        font_size: "54sp"
+                        bold: True
+                        halign: "center"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_PRIMARY
+
+                    MDLabel:
+                        text: "Auto-escalates to contacts if not cancelled before expiry"
+                        font_style: "Caption"
+                        halign: "center"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_MUTED
+
+                    MDRaisedButton:
+                        text: "I AM SAFE (STOP TIMER)"
+                        size_hint_x: 1
+                        md_bg_color: COLOR_SAFE_GREEN
+                        on_release: root.cancel_timer()
+
+                # Preset Durations
+                MDLabel:
+                    text: "Quick Duration Presets"
+                    font_style: "Subtitle2"
+                    bold: True
+                    theme_text_color: "Custom"
+                    text_color: COLOR_TEXT_PRIMARY
+
+                MDGridLayout:
+                    cols: 4
+                    spacing: "8dp"
+                    size_hint_y: None
+                    height: "48dp"
+
+                    MDRaisedButton:
+                        text: "5m"
+                        size_hint: 1, 1
+                        md_bg_color: COLOR_SURFACE_CONTAINER_HIGH
+                        on_release: root.start_preset_timer(5)
+
+                    MDRaisedButton:
+                        text: "15m"
+                        size_hint: 1, 1
+                        md_bg_color: COLOR_SURFACE_CONTAINER_HIGH
+                        on_release: root.start_preset_timer(15)
+
+                    MDRaisedButton:
+                        text: "30m"
+                        size_hint: 1, 1
+                        md_bg_color: COLOR_SURFACE_CONTAINER_HIGH
+                        on_release: root.start_preset_timer(30)
+
+                    MDRaisedButton:
+                        text: "1h"
+                        size_hint: 1, 1
+                        md_bg_color: COLOR_SURFACE_CONTAINER_HIGH
+                        on_release: root.start_preset_timer(60)
+
+                # Simulated Fake Call Tool Card
+                MDCard:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: "72dp"
+                    padding: "16dp"
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [12, 12, 12, 12]
+
+                    MDIcon:
+                        icon: "phone-incoming"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TRACKING_BLUE
+                        pos_hint: {"center_y": 0.5}
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        padding: ["12dp", "0dp", "0dp", "0dp"]
+
+                        MDLabel:
+                            text: "Fake Incoming Call"
+                            font_style: "Subtitle2"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                        MDLabel:
+                            text: "Simulate call to excuse yourself (5s delay)"
+                            font_style: "Caption"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_MUTED
+
+                    MDRaisedButton:
+                        text: "Trigger"
+                        md_bg_color: COLOR_TRACKING_BLUE
+                        pos_hint: {"center_y": 0.5}
+                        on_release: root.trigger_fake_call()
+
+        # 5-Tab Navigation Bar
+        MDBoxLayout:
+            size_hint_y: None
+            height: "64dp"
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
+
+            MDIconButton:
+                icon: "home"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("home")
+
+            MDIconButton:
+                icon: "shield"
+                theme_text_color: "Custom"
+                text_color: COLOR_TRACKING_BLUE
+                size_hint_x: 0.2
+                on_release: root.open_section("safety")
+
+            MDIconButton:
+                icon: "book-open-page-variant"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("guides")
+
+            MDIconButton:
+                icon: "account-multiple"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("contacts")
+
+            MDIconButton:
+                icon: "account"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("profile")

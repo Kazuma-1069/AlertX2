@@ -1,56 +1,363 @@
+#:import COLOR_SURFACE app.config.theme.COLOR_SURFACE
+#:import COLOR_SURFACE_CONTAINER app.config.theme.COLOR_SURFACE_CONTAINER
+#:import COLOR_SURFACE_CONTAINER_LOW app.config.theme.COLOR_SURFACE_CONTAINER_LOW
+#:import COLOR_SURFACE_CONTAINER_HIGH app.config.theme.COLOR_SURFACE_CONTAINER_HIGH
+#:import COLOR_EMERGENCY_RED app.config.theme.COLOR_EMERGENCY_RED
+#:import COLOR_TRACKING_BLUE app.config.theme.COLOR_TRACKING_BLUE
+#:import COLOR_TEXT_PRIMARY app.config.theme.COLOR_TEXT_PRIMARY
+#:import COLOR_TEXT_MUTED app.config.theme.COLOR_TEXT_MUTED
+#:import COLOR_SAFE_GREEN app.config.theme.COLOR_SAFE_GREEN
+
 <HomeScreen>:
+    md_bg_color: COLOR_SURFACE
+
     MDBoxLayout:
         orientation: "vertical"
-        padding: "16dp"
-        spacing: "16dp"
 
-        MDTopAppBar:
-            title: "AlertX2 Safety"
-            elevation: 2
-            right_action_items: [["account-circle", lambda x: setattr(root.manager, "current", "profile")]]
-
-        MDLabel:
-            text: "RAPID EMERGENCY ASSISTANCE"
-            halign: "center"
-            theme_text_color: "Secondary"
-            font_style: "Subtitle2"
-
-        MDFillRoundFlatButton:
-            text: "SOS"
-            font_size: "36sp"
-            size_hint: None, None
-            size: "180dp", "180dp"
-            pos_hint: {"center_x": 0.5}
-            md_bg_color: 0.9, 0.1, 0.1, 1
-            on_release: root.on_sos_click()
-
-        MDLabel:
-            text: "Press to instantly alert contacts and dispatch live location"
-            halign: "center"
-            theme_text_color: "Hint"
-
-        MDGridLayout:
-            cols: 2
-            spacing: "12dp"
+        # Fixed Header Bar matching Stitch
+        MDBoxLayout:
             size_hint_y: None
-            height: "120dp"
+            height: "64dp"
+            padding: ["16dp", "8dp", "16dp", "8dp"]
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
 
-            MDRaisedButton:
-                text: "Safety Timer"
-                size_hint: 1, 1
-                on_release: root.manager.current = "safety"
+            MDBoxLayout:
+                orientation: "horizontal"
+                spacing: "8dp"
 
-            MDRaisedButton:
-                text: "Emergency Guides"
-                size_hint: 1, 1
-                on_release: root.manager.current = "guides"
+                MDLabel:
+                    text: "ALERTX"
+                    font_style: "H6"
+                    bold: True
+                    theme_text_color: "Custom"
+                    text_color: COLOR_TEXT_PRIMARY
 
-            MDRaisedButton:
-                text: "Contacts"
-                size_hint: 1, 1
-                on_release: root.manager.current = "contacts"
+                MDLabel:
+                    text: "HOME"
+                    font_style: "Caption"
+                    bold: True
+                    theme_text_color: "Custom"
+                    text_color: COLOR_TRACKING_BLUE
 
-            MDRaisedButton:
-                text: "Nearby Safe Zones"
-                size_hint: 1, 1
-                on_release: root.manager.current = "nearby"
+            MDIconButton:
+                icon: "bell-outline"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+
+            MDIconButton:
+                icon: "account-circle"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_PRIMARY
+                on_release: root.open_section("profile")
+
+        # Scrollable Body matching Stitch layout
+        ScrollView:
+            do_scroll_x: False
+
+            MDBoxLayout:
+                orientation: "vertical"
+                padding: ["16dp", "12dp", "16dp", "16dp"]
+                spacing: "14dp"
+                adaptive_height: True
+
+                # Top Greeting & Safety Status Bar
+                MDBoxLayout:
+                    orientation: "horizontal"
+                    adaptive_height: True
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        adaptive_height: True
+
+                        MDLabel:
+                            text: "Good morning, Alex"
+                            font_style: "H6"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                        MDLabel:
+                            text: "Austin Metro Sector • " + root.battery_text
+                            font_style: "Caption"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_MUTED
+
+                    MDBoxLayout:
+                        adaptive_size: True
+                        padding: ["10dp", "4dp", "10dp", "4dp"]
+                        md_bg_color: COLOR_SURFACE_CONTAINER_HIGH
+                        radius: [16, 16, 16, 16]
+
+                        MDLabel:
+                            text: "SYSTEM ACTIVE • SAFE"
+                            font_style: "Caption"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_SAFE_GREEN
+
+                # Telemetry Strip Banner
+                MDCard:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: "56dp"
+                    padding: ["14dp", "8dp", "14dp", "8dp"]
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [12, 12, 12, 12]
+
+                    MDIcon:
+                        icon: "satellite-variant"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TRACKING_BLUE
+                        pos_hint: {"center_y": 0.5}
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        padding: ["10dp", "0dp", "0dp", "0dp"]
+
+                        MDLabel:
+                            text: "GPS High Precision Active"
+                            font_style: "Subtitle2"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                        MDLabel:
+                            text: root.location_text
+                            font_style: "Caption"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_MUTED
+
+                # DOMINATING SOS CORE SECTION
+                MDCard:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: "280dp"
+                    padding: ["16dp", "20dp", "16dp", "16dp"]
+                    spacing: "8dp"
+                    md_bg_color: COLOR_SURFACE_CONTAINER_LOW
+                    radius: [16, 16, 16, 16]
+
+                    # Centered SOS Button with outer concentric bounds
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        adaptive_height: True
+                        pos_hint: {"center_x": 0.5}
+
+                        MDFillRoundFlatButton:
+                            text: "SOS"
+                            font_size: "42sp"
+                            size_hint: None, None
+                            size: "140dp", "140dp"
+                            pos_hint: {"center_x": 0.5}
+                            md_bg_color: COLOR_EMERGENCY_RED
+                            on_release: root.trigger_emergency("BUTTON")
+
+                    MDLabel:
+                        text: "Press to activate emergency assistance"
+                        halign: "center"
+                        font_style: "Subtitle2"
+                        bold: True
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_PRIMARY
+
+                    MDLabel:
+                        text: "Alerts emergency dispatch & designated contacts"
+                        halign: "center"
+                        font_style: "Caption"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TEXT_MUTED
+
+                    # 5-Tap Power Key SOS Feature Pill Toggle
+                    MDBoxLayout:
+                        adaptive_size: True
+                        pos_hint: {"center_x": 0.5}
+                        padding: ["12dp", "6dp", "12dp", "6dp"]
+                        md_bg_color: COLOR_SURFACE_CONTAINER_HIGH
+                        radius: [16, 16, 16, 16]
+
+                        MDIcon:
+                            icon: "power"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TRACKING_BLUE
+
+                        MDLabel:
+                            text: " 5-Tap Power Key SOS: ON"
+                            font_style: "Caption"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TRACKING_BLUE
+
+                # Quick Actions Row (Safety Tools + Emergency Guides)
+                MDGridLayout:
+                    cols: 2
+                    spacing: "12dp"
+                    size_hint_y: None
+                    height: "110dp"
+
+                    MDCard:
+                        orientation: "vertical"
+                        padding: "12dp"
+                        md_bg_color: COLOR_SURFACE_CONTAINER
+                        radius: [12, 12, 12, 12]
+                        on_release: root.open_section("safety")
+
+                        MDIcon:
+                            icon: "shield-check"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TRACKING_BLUE
+
+                        MDLabel:
+                            text: "Safety Tools"
+                            font_style: "Subtitle2"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                        MDLabel:
+                            text: "Timer, Check-in"
+                            font_style: "Caption"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_MUTED
+
+                    MDCard:
+                        orientation: "vertical"
+                        padding: "12dp"
+                        md_bg_color: COLOR_SURFACE_CONTAINER
+                        radius: [12, 12, 12, 12]
+                        on_release: root.open_section("guides")
+
+                        MDIcon:
+                            icon: "book-cross"
+                            theme_text_color: "Custom"
+                            text_color: (1.0, 0.72, 0.46, 1.0)
+
+                        MDLabel:
+                            text: "Emergency Guides"
+                            font_style: "Subtitle2"
+                            bold: True
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                        MDLabel:
+                            text: "Offline First-Aid"
+                            font_style: "Caption"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_MUTED
+
+                # Nearby Help Services List
+                MDLabel:
+                    text: "Nearby Emergency Services"
+                    font_style: "Subtitle2"
+                    bold: True
+                    theme_text_color: "Custom"
+                    text_color: COLOR_TEXT_PRIMARY
+
+                MDCard:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: "56dp"
+                    padding: ["12dp", "8dp", "12dp", "8dp"]
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [12, 12, 12, 12]
+
+                    MDIcon:
+                        icon: "police-badge"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TRACKING_BLUE
+                        pos_hint: {"center_y": 0.5}
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        padding: ["10dp", "0dp", "0dp", "0dp"]
+
+                        MDLabel:
+                            text: "Police Precinct (0.8 km)"
+                            font_style: "Subtitle2"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                        MDLabel:
+                            text: "Metropolitan Precinct • Dial 112 / 911"
+                            font_style: "Caption"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_MUTED
+
+                    MDIconButton:
+                        icon: "phone"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_TRACKING_BLUE
+
+                MDCard:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: "56dp"
+                    padding: ["12dp", "8dp", "12dp", "8dp"]
+                    md_bg_color: COLOR_SURFACE_CONTAINER
+                    radius: [12, 12, 12, 12]
+
+                    MDIcon:
+                        icon: "hospital-box"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_EMERGENCY_RED
+                        pos_hint: {"center_y": 0.5}
+
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        padding: ["10dp", "0dp", "0dp", "0dp"]
+
+                        MDLabel:
+                            text: "St. Jude Hospital (1.4 km)"
+                            font_style: "Subtitle2"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_PRIMARY
+
+                        MDLabel:
+                            text: "Emergency Trauma Unit"
+                            font_style: "Caption"
+                            theme_text_color: "Custom"
+                            text_color: COLOR_TEXT_MUTED
+
+                    MDIconButton:
+                        icon: "phone"
+                        theme_text_color: "Custom"
+                        text_color: COLOR_EMERGENCY_RED
+
+        # 5-Tab Bottom Navigation Bar matching Stitch
+        MDBoxLayout:
+            size_hint_y: None
+            height: "64dp"
+            md_bg_color: COLOR_SURFACE_CONTAINER_LOW
+
+            MDIconButton:
+                icon: "home"
+                theme_text_color: "Custom"
+                text_color: COLOR_TRACKING_BLUE
+                size_hint_x: 0.2
+                on_release: root.open_section("home")
+
+            MDIconButton:
+                icon: "shield"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("safety")
+
+            MDIconButton:
+                icon: "book-open-page-variant"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("guides")
+
+            MDIconButton:
+                icon: "account-multiple"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("contacts")
+
+            MDIconButton:
+                icon: "account"
+                theme_text_color: "Custom"
+                text_color: COLOR_TEXT_MUTED
+                size_hint_x: 0.2
+                on_release: root.open_section("profile")

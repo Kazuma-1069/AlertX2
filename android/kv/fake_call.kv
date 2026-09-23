@@ -1,0 +1,115 @@
+﻿<FakeCallScreen>:
+    md_bg_color: 0.051, 0.067, 0.090, 1   # #0D1117
+
+    MDBoxLayout:
+        orientation: "vertical"
+        padding: 0
+        spacing: 0
+
+        # ── Full-screen call card ──────────────────────────────────────────
+        MDBoxLayout:
+            orientation: "vertical"
+            padding: "32dp"
+            spacing: "20dp"
+            md_bg_color: 0.051, 0.067, 0.090, 1
+
+            # Spacer
+            Widget:
+                size_hint_y: None
+                height: "40dp"
+
+            # ── Caller avatar ──────────────────────────────────────────────
+            MDIcon:
+                icon: "account-circle"
+                theme_text_color: "Custom"
+                text_color: 0.941, 0.965, 0.988, 1
+                halign: "center"
+                font_size: "128sp"
+                size_hint_y: None
+                height: "144dp"
+
+            # ── Caller name ────────────────────────────────────────────────
+            MDLabel:
+                text: root.caller_name
+                halign: "center"
+                theme_text_color: "Custom"
+                text_color: 0.941, 0.965, 0.988, 1
+                font_style: "H4"
+                bold: True
+                size_hint_y: None
+                height: "48dp"
+
+            # ── Status label (Incoming / Timer) ────────────────────────────
+            MDLabel:
+                text: root.timer_text if root.call_active else "Incoming Call..."
+                halign: "center"
+                theme_text_color: "Custom"
+                text_color: 0.914, 0.639, 0.098, 1   # amber
+                font_style: "H6"
+                size_hint_y: None
+                height: "36dp"
+
+            # Spacer
+            Widget:
+
+            # ── Ringing buttons (visible when NOT active) ──────────────────
+            MDBoxLayout:
+                orientation: "horizontal"
+                spacing: "48dp"
+                size_hint_y: None
+                height: "96dp"
+                padding: ["48dp", 0]
+                opacity: 0 if root.call_active else 1
+                disabled: root.call_active
+
+                # Decline (red)
+                MDFloatingActionButton:
+                    icon: "phone-hangup"
+                    on_release: root.decline_call()
+                    md_bg_color: 0.851, 0.176, 0.125, 1   # #D92D20
+                    theme_text_color: "Custom"
+                    text_color: 1, 1, 1, 1
+                    elevation: 4
+
+                # Accept (green)
+                MDFloatingActionButton:
+                    icon: "phone-in-talk"
+                    on_release: root.accept_call()
+                    md_bg_color: 0.133, 0.545, 0.133, 1   # forest green
+                    theme_text_color: "Custom"
+                    text_color: 1, 1, 1, 1
+                    elevation: 4
+
+            # ── Active call buttons (visible when active) ──────────────────
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: "16dp"
+                size_hint_y: None
+                height: "120dp"
+                opacity: 1 if root.call_active else 0
+                disabled: not root.call_active
+
+                MDLabel:
+                    text: root.timer_text
+                    halign: "center"
+                    theme_text_color: "Custom"
+                    text_color: 0.133, 0.545, 0.133, 1
+                    font_style: "H5"
+                    bold: True
+                    size_hint_y: None
+                    height: "44dp"
+
+                MDRaisedButton:
+                    text: "End Call"
+                    on_release: root.end_call()
+                    md_bg_color: 0.851, 0.176, 0.125, 1
+                    size_hint_x: 0.6
+                    pos_hint: {"center_x": 0.5}
+                    height: "52dp"
+                    font_size: "16sp"
+                    bold: True
+
+            # Bottom spacer
+            Widget:
+                size_hint_y: None
+                height: "40dp"
